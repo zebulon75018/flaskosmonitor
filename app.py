@@ -10,7 +10,7 @@ server = Flask(__name__)
 
 
 initial_sql = """CREATE TABLE IF NOT EXISTS log(
-                    TimeStamp TEXT,
+                    TimeStamp INTEGER,
                     cpu_percent FLOAT
                )"""
 
@@ -47,10 +47,7 @@ def create_item(conn, item):
     :param task:
     :return:
     """
-    now = time.strftime("%Y-%m-%d %H:%M:%S")
-    print("create item %s " % now)
-    sql = ''' INSERT INTO log(TimeStamp,cpu_percent) VALUES(?,?) '''
-    conn.execute("INSERT INTO log(TimeStamp,cpu_percent) VALUES('%s',%s)" % (now,item))
+    conn.execute("INSERT INTO log(TimeStamp,cpu_percent) VALUES(%d,%s)" % ( int(time.time()),item))
     conn.commit()
     
 def processthread( foo, foo2 ):
@@ -65,8 +62,9 @@ def processthread( foo, foo2 ):
                                 cursor = conn.cursor()
                                 percent = psutil.cpu_percent()
                                 #conn = sqlite3.connect('log.db')
-                                now = time.strftime("%Y-%m-%d %H:%M:%S")
-                                sql = "INSERT INTO log(TimeStamp,cpu_percent) VALUES('%s',%s)" % (now,percent)
+                                #now = time.strftime("%Y-%m-%d %H:%M:%S")
+                                sql = "INSERT INTO log(TimeStamp,cpu_percent) VALUES(%d,%s)" % (int(time.time()),percent)
+                                #sql = "INSERT INTO log(TimeStamp,cpu_percent) VALUES('%s',%s)" % (now,percent)
                                 cursor.execute(sql)
                                 conn.commit() 
                                 print(sql)
@@ -79,7 +77,7 @@ def processthread( foo, foo2 ):
 def hello():
     conn = create_connection("log.db")
     cur = conn.cursor()
-    cur.execute("SELECT cpu_percent FROM log")
+    cur.execute("SELECT TimeStamp,cpu_percent FROM log")
     rows = cur.fetchall()
     return render_template('index.html', rows=rows)
     #return "Hello World!"
