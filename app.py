@@ -3,6 +3,7 @@ import thread
 import time
 import psutil
 import sqlite3
+import json
 from flask import Flask
 from flask import render_template
 
@@ -61,10 +62,7 @@ def processthread( foo, foo2 ):
                                 time.sleep(5)
                                 cursor = conn.cursor()
                                 percent = psutil.cpu_percent()
-                                #conn = sqlite3.connect('log.db')
-                                #now = time.strftime("%Y-%m-%d %H:%M:%S")
                                 sql = "INSERT INTO log(TimeStamp,cpu_percent) VALUES(%d,%s)" % (int(time.time()),percent)
-                                #sql = "INSERT INTO log(TimeStamp,cpu_percent) VALUES('%s',%s)" % (now,percent)
                                 cursor.execute(sql)
                                 conn.commit() 
                                 print(sql)
@@ -72,6 +70,17 @@ def processthread( foo, foo2 ):
                 conn.close()
 
 
+
+@server.route('/getjson')
+def getjson():
+    conn = create_connection("log.db")
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM  log ORDER BY TimeStamp DESC LIMIT 1;")
+    rows = cur.fetchall()
+    print(rows)
+    return json.dumps(rows)
+    return render_template('index.html', rows=rows)
+    
 
 @server.route('/')
 def hello():
