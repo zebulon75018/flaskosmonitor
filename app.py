@@ -62,7 +62,7 @@ def processthread( foo, foo2 ):
                                 time.sleep(5)
                                 cursor = conn.cursor()
                                 percent = psutil.cpu_percent()
-                                sql = "INSERT INTO log(TimeStamp,cpu_percent) VALUES(%d,%s)" % (int(time.time()),percent)
+                                sql = "INSERT INTO log(TimeStamp,cpu_percent) VALUES(%d,%s)" % (time.time()*1000,percent)
                                 cursor.execute(sql)
                                 conn.commit() 
                                 print(sql)
