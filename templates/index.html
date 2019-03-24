@@ -3,21 +3,34 @@
 {% block title %} Minimal Flask Table {% endblock %}
 
 {% block body %}
+
+
 <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
 
 
 <script>
 
-  
+setInterval(function() {
+  $.get("getjson", function(data, status){
+    j = JSON.parse(data)
+    hc.series[0].addPoint([new Date().getTime(), j[0][1]], true, true);   
+  });
+}, 5000);
 
 data = {{rows|tojson}} 
 
-    Highcharts.chart('container', {
+var hc= Highcharts.stockChart('container', {
       chart: {
-        zoomType: 'x'
+        zoomType: 'x',
+        events: {
+          load() {
+            var series = this.series[0];
+          }
+        }
       },
       title: {
-        text: 'USD to EUR exchange rate over time'
+        text: 'Load CPU Percent'
       },
       subtitle: {
         text: document.ontouchstart === undefined ?
@@ -28,9 +41,9 @@ data = {{rows|tojson}}
       },
       yAxis: {
         title: {
-          text: 'Exchange rate'
+          text: 'CPU Percent'
         }
-      },
+      },  
       legend: {
         enabled: false
       },
@@ -60,65 +73,13 @@ data = {{rows|tojson}}
           threshold: null
         }
       },
-
+      
       series: [{
         type: 'area',
-        name: 'USD to EUR',
+        name: 'CPU Percent',
         data: data
       }]
+      
     });
-/*
-Highcharts.chart('container', {
-
-  title: {
-    text: 'Solar Employment Growth by Sector, 2010-2016'
-  },
-
-  subtitle: {
-    text: 'Source: thesolarfoundation.com'
-  },
-
-  yAxis: {
-    title: {
-      text: 'Number of Employees'
-    }
-  },
-  legend: {
-    layout: 'vertical',
-    align: 'right',
-    verticalAlign: 'middle'
-  },
-
-  plotOptions: {
-    series: {
-      label: {
-        connectorAllowed: false
-      },
-      pointStart: 2010
-    }
-  },
-
-  series: [{
-    name: 'Installation',
-    data: {{rows|tojson}}
-  }],
-
-  responsive: {
-    rules: [{
-      condition: {
-        maxWidth: 500
-      },
-      chartOptions: {
-        legend: {
-          layout: 'horizontal',
-          align: 'center',
-          verticalAlign: 'bottom'
-        }
-      }
-    }]
-  }
-
-});
-*/
 </script>
 {% endblock %}
