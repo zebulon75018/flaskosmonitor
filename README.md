@@ -5,3 +5,4 @@ a process every 5 second scan with psutil the cpu_percent by a thread and save i
 with a flask webserver delivry the data....
 
 
+![Screenshot](screen1.jpg)
